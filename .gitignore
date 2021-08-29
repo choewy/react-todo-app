@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/src/util/google.sheets.key.json
+/src/util/encode.config.json

@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAAA,kBACE,oBAAqB,CACrB,SACF","file":"main.bcff02ed.chunk.css","sourcesContent":[".error !important {\r\n  border: 1px solid red;\r\n  color: red;\r\n}\r\n"]}

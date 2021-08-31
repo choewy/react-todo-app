@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import Login from './Login';
 import Signup from './Signup';
 
-const Auth = () => {
+const AuthTemplate = () => {
     return (
         <>
             <Route exact={true} path='/auth/login' component={Login} />
@@ -12,4 +12,4 @@ const Auth = () => {
     )
 }
 
-export default Auth;
+export default AuthTemplate;

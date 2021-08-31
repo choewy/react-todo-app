@@ -1,5 +1,5 @@
 const AUTH_KEY = "react-todo-app-auth";
-const AUTO_SAVE = "react-todo-app-auto-save"
+const AUTO_SAVE = "react-todo-app-save"
 
 const stringfy = (object) => {
     return JSON.stringify(object);
@@ -23,16 +23,16 @@ export const removeLocalAuth = () => {
     return null;
 }
 
-export const setLocalAutoSave = (email) => {
+export const setLocalSave = (email) => {
     localStorage.setItem(AUTO_SAVE, stringfy(email));
     return email;
 }
 
-export const getLocalAutoSave = () => {
+export const getLocalSave = () => {
     return parse(localStorage.getItem(AUTO_SAVE));
 }
 
-export const removeLocalAutoSave = () => {
+export const removeLocalSave = () => {
     localStorage.removeItem(AUTO_SAVE);
     return null;
 }

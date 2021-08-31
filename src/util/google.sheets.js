@@ -11,7 +11,7 @@ const api = {
     },
     header: {
         user: ['uuid', 'email', 'name', 'salt', 'password', 'registDate', 'author'],
-        todo: ['uuid', 'group_seq', 'group_title', 'items']
+        todo: ['uuid', 'id', 'title', 'todos']
     },
     init: async () => {
         await api.doc.useServiceAccountAuth(API_KEY.GOOGLE_CONFIG);
@@ -44,9 +44,7 @@ export const findUserInGoogleSheet = (email) =>
                         }
                     })
                 })
-                .catch(error => {
-                    reject(error);
-                })
+                .catch(error => reject(error))
         }
         resolve(auth);
     })
@@ -70,19 +68,12 @@ export const appendUserInGoogleSheet = (email, name, password) =>
         await api.init();
         await api.doc.sheetsByTitle[api.sheet.user].addRow(auth)
             .then(() => {
-                resolve({
-                    uuid: auth.uuid,
-                    name: auth.name,
-                    email: auth.email,
-                    author: auth.author
-                });
+                resolve(auth);
             })
-            .catch(error => {
-                reject(error);
-            })
+            .catch(error => reject(error))
     })
 
-export const getTodoFromGoogleSheet = (uuid) =>
+export const getTodosFromGoogleSheet = (uuid) =>
     new Promise(async (resolve, reject) => {
         const groups = [];
         await api.init();
@@ -92,7 +83,7 @@ export const getTodoFromGoogleSheet = (uuid) =>
                     if (row.uuid === uuid) {
                         const group = {};
                         api.header.todo.forEach(key => {
-                            if (key === 'items') group[key] = JSON.parse(row[key])
+                            if (key === 'todos') group[key] = JSON.parse(row[key])
                             else group[key] = row[key]
                         })
                         groups.push(group);
@@ -100,7 +91,56 @@ export const getTodoFromGoogleSheet = (uuid) =>
                 })
                 resolve(groups);
             })
-            .catch(error => {
-                reject(error);
+            .catch(error => reject(error))
+    })
+
+export const appendGroupToGoogleSheet = (uuid, group_title) =>
+    new Promise(async (resolve, reject) => {
+        const group = {
+            uuid,
+            group_seq: `G-${v4()}`,
+            group_title,
+            items: '[]'
+        }
+
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].addRow(group)
+            .then(() => resolve(group))
+            .catch(error => reject(error));
+    });
+
+export const editGroupTitleInGoogleSheet = (uuid, group_seq, title) =>
+    new Promise(async (resolve, reject) => {
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].getRows()
+            .then(async groups => {
+                let index = 0;
+                groups.forEach((group, _index) => {
+                    if (group.uuid === uuid && group.group_seq === group_seq) {
+                        index = _index
+                    }
+                });
+                groups[index].group_title = title;
+                await groups[index].save();
+                resolve();
             })
+            .catch(error => reject(error));
+    });
+
+export const removeGroupFromGoogleSheet = (uuid, group_seq) =>
+    new Promise(async (resolve, reject) => {
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].getRows()
+            .then(async groups => {
+                let index = 0;
+                groups.forEach((group, _index) => {
+                    if (group.uuid === uuid && group.group_seq === group_seq) {
+                        index = _index
+                        return
+                    }
+                });
+                await groups[index].delete();
+                resolve();
+            })
+            .catch(error => reject(error));
     })

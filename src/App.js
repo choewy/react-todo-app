@@ -1,30 +1,34 @@
 import React from 'react';
 import { Route, Switch } from "react-router-dom";
-import Auth from './components/Auth';
+import styled, { createGlobalStyle } from 'styled-components';
 import Footer from "./components/Common/Footer";
 import Header from "./components/Common/Header";
 import Home from './components/Common/Home';
 import Page404 from './components/Common/Page404';
-import Todo from './components/Todo';
+import { useAuthState } from './context/AuthContext';
+import AuthRoute from './routes/AuthRoute';
+import TodoRoute from './routes/TodoRoute';
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background: #e9ecef;
+  }
+`
 
 const App = () => {
-  // 이거 다시 적용하는 거 검토
-  // 아, auth만 사용하는 걸로
-  // 왜냐하면 새로고침하거나 바로 진입할 경우 location.state props 못 받음.
-
+  const auth = useAuthState();
   return (
-    <div className="App">
-      <Header />
-      < main className="main">
-        <Switch>
-          <Route exact={true} path="/" component={Home} />
-          <Route path="/auth/" component={Auth} />
-          <Route path="/todo/" component={Todo} />
-          <Route path="/" component={Page404} />
-        </Switch>
-      </main>
+    <>
+      <GlobalStyle />
+      <Header auth={auth} />
+      <Switch>
+        <Route exact={true} path="/" component={Home} />
+        <Route path="/auth/" component={AuthRoute} />
+        <Route path="/todo/" component={TodoRoute} />
+        <Route path="/" component={Page404} />
+      </Switch>
       <Footer />
-    </div>
+    </>
   );
 }
 

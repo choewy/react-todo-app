@@ -1,64 +1,60 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getLocalAuth, removeLocalAuth } from '../../util/storage';
+import styled from 'styled-components';
+import { useAuthDispatch } from '../../context/AuthContext';
 
-const LinkLogin = ({ auth }) => {
-    return (
-        auth === null
-            ? <Link to={{ pathname: "/auth/login", state: {} }}>로그인</Link>
-            : <></>
-    )
-}
+const NavbarWrapper = styled.ul`
+    list-style-type: none;
+    width: 300px;
+    margin: 10px 0;
+    padding: 10px 0;
+`
+const NavbarItem = styled.li`
+    float: left;
+`
+const NavbarLink = styled(Link)`
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 0 20px;
+    text-align: center;
+`
 
-const LinkSignup = ({ auth }) => {
-    return (
-        auth === null
-            ? <Link to={{ pathname: "/auth/signup", state: {} }}>회원가입</Link>
-            : <></>
-    )
-}
+const Navbar = ({ auth }) => {
+    const dispatch = useAuthDispatch();
 
-const LinkTodo = ({ auth }) => {
-    return (
-        auth === null
-            ? <></>
-            : <Link to={{ pathname: "/todo", state: {} }}>TODO</Link>
-    )
-}
-
-const LinkLogout = ({ auth }) => {
-
-    const handleLogout = () => {
-        removeLocalAuth();
-        window.location.reload();
+    const onLogout = () => {
+        dispatch({ type: "AUTH_LOGOUT" })
     }
-    return (
-        auth === null
-            ? <></>
-            : <Link to={{ pathname: "/", state: { auth } }} onClick={handleLogout}>로그아웃</Link>
-    )
-}
 
-const Navbar = () => {
-    const auth = getLocalAuth();
     return (
-        <ul className="navbar">
-            <li>
-                <Link to={{ pathname: "/", state: { auth } }}>홈</Link>
-            </li>
-            <li>
-                <LinkLogin auth={auth} />
-            </li>
-            <li>
-                <LinkSignup auth={auth} />
-            </li>
-            <li>
-                <LinkTodo auth={auth} />
-            </li>
-            <li>
-                <LinkLogout auth={auth} />
-            </li>
-        </ul>
+        <NavbarWrapper>
+            <NavbarItem>
+                <NavbarLink to="/">홈</NavbarLink>
+            </NavbarItem>
+            {
+                auth === null
+                    ? (
+                        <>
+                            <NavbarItem>
+                                <NavbarLink to="/auth/login">로그인</NavbarLink>
+                            </NavbarItem>
+                            <NavbarItem>
+                                <NavbarLink to="/auth/signup">회원가입</NavbarLink>
+                            </NavbarItem>
+                        </>
+                    ) : (
+                        <>
+                            <NavbarItem>
+                                <NavbarLink to="/todo/groups/">TODO</NavbarLink>
+                            </NavbarItem>
+                            <NavbarItem>
+                                <NavbarLink to="/" onClick={onLogout}>로그아웃</NavbarLink>
+                            </NavbarItem>
+                        </>
+                    )
+            }
+        </NavbarWrapper>
     )
 }
 

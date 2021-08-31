@@ -1,10 +1,11 @@
 import React from 'react';
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
     width: 768px;
     height: 768px;
 
+    position: relative; /* 추후 박스 하단에 추가 버튼을 위치시키기 위한 설정 */
     background: white;
     border-radius: 16px;
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.04);
@@ -17,12 +18,12 @@ const Wrapper = styled.div`
     flex-direction: column;
 `
 
-const Page404 = () => {
+const FindPassword = () => {
     return (
         <Wrapper>
-            404 : Page Not Found
+            (기능 구현 중 ... 🤔)
         </Wrapper>
     )
 }
 
-export default Page404;
+export default FindPassword;

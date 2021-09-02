@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 import styled, { css } from 'styled-components';
 import { useTodoDispatch } from '../../context/TodoContext';
+import { v4 } from 'uuid';
+import { appendGroupInGoogleSheet } from '../../util/google.sheets';
+import { useAuthState } from '../../context/AuthContext';
+import Spinner from '../Common/Spinner';
 
 const GroupAppendForm = styled.form`
     background: #f8f9fa;
@@ -13,6 +17,10 @@ const GroupAppendForm = styled.form`
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
     border-top: 1px solid #e9ecef;
+
+    align-items: center;
+    justify-content: center;
+    display: flex;
 `;
 
 const GroupAppendInput = styled.input`
@@ -74,50 +82,69 @@ const GroupAppendButton = styled.button`
     }
 `;
 
-/* 재사용 
-    const onAppend = (event) => {
-        event.preventDefault();
-        if (title) {
-            dispatch({
-                type: "GROUP_APPEND",
-                title
-            })
-            setTitle("");
-        }
-    }
-    */
-
 const GroupAppend = () => {
+    const auth = useAuthState();
     const dispatch = useTodoDispatch();
 
     const [title, setTitle] = useState('');
     const [open, setOpen] = useState(false);
 
-    const onAppend = (event) => {
+    const [loader, setLoader] = useState(false);
+
+    const onAppend = async (event) => {
         event.preventDefault();
+
         if (title) {
-            dispatch({
-                type: "TODO_APPEND",
-                title
-            })
-            setTitle("");
+            setLoader(true);
+
+            const group = {
+                id: `G-${v4()}`,
+                title,
+                uuid: auth.uuid
+            };
+
+            await appendGroupInGoogleSheet(group)
+                .then(() => {
+                    dispatch({
+                        type: "GROUP_APPEND",
+                        group
+                    })
+                    setTitle('');
+                })
+                .catch(error => {
+                    console.log(error)
+                });
+
+            setLoader(false);
         }
+
     }
 
     return (
-        <>
-            {
-                open && (
-                    <GroupAppendForm onSubmit={onAppend}>
-                        <GroupAppendInput
-                            autoFocus
-                            placeholder="새 그룹 추가"
-                            value={title}
-                            onChange={event => setTitle(event.target.value)}
-                        />
-                    </GroupAppendForm>
-                )
-            }
+        <>{
+            open && (
+                <GroupAppendForm onSubmit={onAppend}>
+                    {
+                        loader
+                            ? (
+                                <Spinner
+                                    width={30}
+                                    height={30}
+                                    type="Oval"
+                                    color="#3d66ba"
+                                />
+                            ) : (
+                                <GroupAppendInput
+                                    autoFocus
+                                    placeholder="새 그룹 추가"
+                                    value={title}
+                                    onChange={event => setTitle(event.target.value)}
+                                />
+                            )
+                    }
+                </GroupAppendForm>
+            )
+        }
             <GroupAppendButton open={open} onClick={() => setOpen(!open)}>
                 <MdAdd />
             </GroupAppendButton>

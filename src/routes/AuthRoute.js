@@ -9,9 +9,9 @@ import { useAuthState } from '../context/AuthContext';
 
 const Wrapper = styled.div`
     width: 768px;
-    height: 768px;
+    height: 100vh;
 
-    position: relative; /* 추후 박스 하단에 추가 버튼을 위치시키기 위한 설정 */
+    position: relative;
     background: white;
     border-radius: 16px;
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.04);
@@ -22,6 +22,10 @@ const Wrapper = styled.div`
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `
 
 const AuthRoute = () => {

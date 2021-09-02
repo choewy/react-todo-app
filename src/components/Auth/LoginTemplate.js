@@ -4,8 +4,9 @@ import styled, { css } from 'styled-components';
 import { useAuthDispatch } from '../../context/AuthContext';
 import { encodingPassword } from '../../util/encode';
 import { EMAIL_EXP, PASSWORD_EXP } from '../../util/expression';
-import { findUserInGoogleSheet } from '../../util/google.sheets';
+import { getAuthInGoogleSheet } from '../../util/google.sheets';
 import { getLocalSave } from '../../util/storage';
+import Spinner from '../Common/Spinner';
 import LoginHeader from './LoginHeader';
 
 const LoginForm = styled.form`
@@ -17,7 +18,7 @@ const LoginForm = styled.form`
     margin: 0 auto;
 
     padding-top: 32px;
-    padding-bottom: 72px;
+    padding-bottom: 16px;
 
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
@@ -26,6 +27,10 @@ const LoginForm = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    @media (max-width: 768px) {
+        width: 300px;
+    }
 `
 
 const LoginLabel = styled.div`
@@ -76,18 +81,55 @@ const LoginCheck = styled.div`
     margin: 10px 0;
 `
 
-const LoginButton = styled.button`
-    padding: 12px;
+const LoginButtonWrapper = styled.div`
     margin: 10px 0;
+    max-width: 500px;
+    width: 100%;
     border-radius: 4px;
     border: 1px solid #dee2e6;
     background-color: #38d9a9;
     cursor: pointer;
+
+    *{
+        width: 100%;
+        padding: 5px;
+    }
+
+    button {
+        padding: 12px;
+    }
+`
+
+const LoginButton = styled.button`
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
     font-size: 18px;
-    width: 100%;
+    text-align: center;
 
     &:hover {
         background: #63e6be;
+    }
+`
+
+const LoginOtherButtonsWrapper = styled.div`
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+
+    * {
+        margin: -10px 20px;
+    }
+
+    @media (max-width: 768px) {
+        width: 300px;
+
+        * {
+            margin: -10px 10px;
+        }
     }
 `
 
@@ -99,7 +141,9 @@ const LoginTemplate = () => {
     const [email, setEmail] = useState(save === null ? '' : save);
     const [password, setPassword] = useState('');
     const [check, setCheck] = useState(save === null ? false : true)
+
     const [disable, setDisable] = useState(false);
+    const [loader, setLoader] = useState(false);
 
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
@@ -148,17 +192,22 @@ const LoginTemplate = () => {
         }
 
         if (errors + error === '') {
+            setLoader(true)
             setDisable(true)
-            const auth = await findUserInGoogleSheet(email)
-            if (auth === null) {
-                setEmailError('존재하지 않은 이메일 계정입니다.')
-                setDisable(false)
-            } else if (await encodingPassword(auth.salt, password) !== auth.password) {
-                setPasswordError('비밀번호가 일치하지 않습니다.')
-                setDisable(false)
-            } else {
-                dispatch({ type: "AUTH_LOGIN", auth, check })
-            }
+            await getAuthInGoogleSheet(email)
+                .then(async (auth) => {
+                    if (auth === null) {
+                        setEmailError('존재하지 않은 이메일 계정입니다.')
+                        setDisable(false)
+                        setLoader(false)
+                    } else if (await encodingPassword(auth.salt, password) !== auth.password) {
+                        setPasswordError('비밀번호가 일치하지 않습니다.')
+                        setDisable(false)
+                        setLoader(false)
+                    } else {
+                        dispatch({ type: "AUTH_LOGIN", auth, check })
+                    }
+                })
         }
     }
 
@@ -188,10 +237,18 @@ const LoginTemplate = () => {
                     <LoginInput type="checkbox" value={check} onChange={onCheck} checked={check} disabled={disable} />
                     이메일 기억하기
                 </LoginCheck>
-                <LoginButton type="submit" disabled={disable}>로그인</LoginButton>
+                <LoginButtonWrapper>
+                    {
+                        loader
+                            ? <Spinner width={36} height={36} type="Oval" color="#3d66ba" />
+                            : <LoginButton type="submit" disabled={disable}>로그인</LoginButton>
+                    }
+                </LoginButtonWrapper>
             </LoginForm >
-            <Link to="/auth/signup/">회원가입</Link>
-            <Link to="/auth/find-password/">비밀번호 찾기</Link>
+            <LoginOtherButtonsWrapper>
+                <Link to="/auth/signup/">회원가입</Link>
+                <Link to="/auth/find-password/">비밀번호 찾기</Link>
+            </LoginOtherButtonsWrapper>
         </>
     )
 }

@@ -1,5 +1,4 @@
 import React, { useContext, createContext, useReducer } from 'react';
-import { v4 } from 'uuid';
 
 const initTodos = [];
 
@@ -9,33 +8,37 @@ function Reducer(state, action) {
             return action.groups
 
         case "GROUP_APPEND":
-            const group = {
-                id: `G-${v4()}`,
-                title: action.title,
+            return state.concat({
+                ...action.group,
                 todos: []
-            }
-            return state.concat(group)
+            });
 
         case "GROUP_CHANGE":
-            return state
+            return state.map((group) => group.id === action.group_id ? { ...group, title: action.editTitle } : group)
 
         case "GROUP_REMOVE":
-            return state
+            return state.filter((group) => group.uuid === action.uuid && group.id !== action.group_id)
 
         case "TODO_APPEND":
-            const todo = {
-                id: `T-${v4()}`,
-                text: action.text,
-                done: false
-            }
-
             return state.map(group => {
-                if (group.id === action.group_id) {
-                    group.todos = [...group.todos, todo]
+                if (group.uuid === action.uuid && group.id === action.group_id) {
+                    group.todos.push(action.todo)
                 }
                 return group
             })
-        case "TODO_CHECK":
+        case "TODO_CHANGE":
+            return state.map(group => {
+                if (group.id === action.group_id) {
+                    group.todos.map(todo => {
+                        if (todo.id === action.todo_id) {
+                            todo.text = action.editText
+                        }
+                        return todo
+                    })
+                }
+                return group
+            });
+        case "TODO_DONE":
             return state.map(group => {
                 if (group.id === action.group_id) {
                     group.todos.map(todo => {

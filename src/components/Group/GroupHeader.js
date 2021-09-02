@@ -7,6 +7,7 @@ const GroupHeaderWrapper = styled.div`
     padding-right: 32px;
     padding-bottom: 24px;
     border-bottom: 1px solid #e9ecef;
+    width: 100%;
 
     h1 {
         margin: 0;
@@ -29,7 +30,7 @@ const GroupHeaderWrapper = styled.div`
 const GroupHeader = () => {
     return (
         <GroupHeaderWrapper>
-            <h1>Todo Groups</h1>
+            <h1>TODO 그룹</h1>
         </GroupHeaderWrapper>
     )
 }

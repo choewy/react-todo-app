@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { TodoProvider } from './context/TodoContext';
 import './index.css'
 
+
 ReactDOM.render(
   <HashRouter>
     <AuthProvider>

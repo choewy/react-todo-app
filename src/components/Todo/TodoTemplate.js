@@ -3,7 +3,7 @@ import TodoAppend from './TodoAppend';
 import { useTodoState } from '../../context/TodoContext';
 import TodoList from './TodoList';
 import TodoNotFound from './TodoNotFound';
-import TodoTitle from './TodoTitle';
+import TodoHeader from './TodoHeader';
 import queryString from 'query-string';
 
 
@@ -18,7 +18,7 @@ const TodoTemplate = ({ location }) => {
                     ? <TodoNotFound />
                     : (
                         <>
-                            <TodoTitle title={group.title} />
+                            <TodoHeader title={group.title} />
                             <TodoList group_id={group_id} todos={group.todos} />
                             <TodoAppend group_id={group_id} />
                         </>

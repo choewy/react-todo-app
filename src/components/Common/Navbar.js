@@ -3,11 +3,18 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuthDispatch } from '../../context/AuthContext';
 
-const NavbarWrapper = styled.ul`
+const NavbarList = styled.ul`
+    width: 768px;
     list-style-type: none;
-    width: 300px;
-    margin: 10px 0;
+    margin-top: 10px;
     padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `
 const NavbarItem = styled.li`
     float: left;
@@ -28,7 +35,7 @@ const Navbar = ({ auth }) => {
     }
 
     return (
-        <NavbarWrapper>
+        <NavbarList>
             <NavbarItem>
                 <NavbarLink to="/">홈</NavbarLink>
             </NavbarItem>
@@ -54,7 +61,7 @@ const Navbar = ({ auth }) => {
                         </>
                     )
             }
-        </NavbarWrapper>
+        </NavbarList>
     )
 }
 

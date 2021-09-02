@@ -7,12 +7,13 @@ import TodoTemplate from '../components/Todo/TodoTemplate';
 import { getTodosFromGoogleSheet } from '../util/google.sheets';
 import { useAuthState } from '../context/AuthContext';
 import { Switch } from 'react-router-dom';
+import Spinner from '../components/Common/Spinner';
 
 const Wrapper = styled.div`
     width: 768px;
-    height: 768px;
+    height: 100vh;
 
-    position: relative; /* 추후 박스 하단에 추가 버튼을 위치시키기 위한 설정 */
+    position: relative;
     background: white;
     border-radius: 16px;
     box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.04);
@@ -23,23 +24,33 @@ const Wrapper = styled.div`
     margin-bottom: 30px;
     display: flex;
     flex-direction: column;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+`
+
+const SpinnerWrapper = styled.div`
+    display: flex;
+    margin: auto;
+    justify-content: center;
 `
 
 const TodoRoute = () => {
     const auth = useAuthState();
-    const [init, setInit] = useState(false);
+    const [loader, setLoader] = useState(false);
     const dispatch = useTodoDispatch();
 
     useEffect(() => {
         const Init = async () => {
             if (auth !== null) {
-                setInit(false);
+                setLoader(false);
                 await getTodosFromGoogleSheet(auth.uuid)
                     .then((groups) => {
                         dispatch({ type: "INIT", groups });
                     })
                     .catch((error) => console.log(error))
-                setInit(true);
+                setLoader(true);
             }
         }
         Init(auth);
@@ -51,8 +62,16 @@ const TodoRoute = () => {
         return (
             <Wrapper>
                 {
-                    !init
-                        ? <>로딩 중...</>
+                    !loader
+                        ?
+                        <SpinnerWrapper>
+                            <Spinner
+                                width={75}
+                                height={75}
+                                type="Oval"
+                                color="#3d66ba"
+                            />
+                        </SpinnerWrapper>
                         :
                         <Switch>
                             <Route exact={true} path="/todo/groups/" component={GroupTemplate} />

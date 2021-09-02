@@ -1,7 +1,11 @@
 import React, { memo, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 import styled, { css } from 'styled-components';
+import { useAuthState } from '../../context/AuthContext';
 import { useTodoDispatch } from '../../context/TodoContext';
+import { v4 } from 'uuid';
+import { appendTodoInGoogleSheet } from '../../util/google.sheets';
+import Spinner from '../Common/Spinner';
 
 const TodoAppendForm = styled.form`
     background: #f8f9fa;
@@ -13,6 +17,10 @@ const TodoAppendForm = styled.form`
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
     border-top: 1px solid #e9ecef;
+
+    align-items: center;
+    justify-content: center;
+    display: flex;
 `;
 
 const TodoAppendInput = styled.input`
@@ -75,22 +83,41 @@ const TodoAppendButton = styled.button`
 `;
 
 const TodoAppend = ({ group_id }) => {
+    const auth = useAuthState();
     const dispatch = useTodoDispatch();
 
     const [text, setText] = useState("");
     const [open, setOpen] = useState(false);
 
-    const onAppend = (event) => {
-        event.preventDefault();
-        if (text) {
-            dispatch({
-                type: "TODO_APPEND",
-                group_id,
-                text
-            })
-            setText("");
-        }
+    const [loader, setLoader] = useState(false);
 
+    const onAppend = async (event) => {
+        event.preventDefault();
+
+        if (text) {
+            setLoader(true);
+
+            const uuid = auth.uuid;
+            const todo = {
+                id: `T-${v4()}`,
+                text,
+                done: false
+            };
+
+            await appendTodoInGoogleSheet(uuid, group_id, todo)
+                .then(() => {
+                    setText('');
+                    dispatch({
+                        type: "TODO_APPEND",
+                        uuid,
+                        group_id,
+                        todo
+                    })
+                })
+                .catch(error => console.log(error));
+
+            setLoader(false);
+        }
     }
 
     return (
@@ -98,12 +125,24 @@ const TodoAppend = ({ group_id }) => {
             {
                 open && (
                     <TodoAppendForm onSubmit={onAppend}>
-                        <TodoAppendInput
-                            autoFocus
-                            placeholder="새로운 할 일 추가"
-                            value={text}
-                            onChange={event => setText(event.target.value)}
-                        />
+                        {
+                            loader
+                                ? (
+                                    <Spinner
+                                        width={30}
+                                        height={30}
+                                        type="Oval"
+                                        color="#3d66ba"
+                                    />
+                                ) : (
+                                    <TodoAppendInput
+                                        autoFocus
+                                        placeholder="새로운 할 일 추가"
+                                        value={text}
+                                        onChange={event => setText(event.target.value)}
+                                    />
+                                )
+                        }
                     </TodoAppendForm>
                 )
             }

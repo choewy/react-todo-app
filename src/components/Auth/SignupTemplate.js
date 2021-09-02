@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAuthDispatch } from '../../context/AuthContext';
 import { EMAIL_EXP, PASSWORD_EXP } from '../../util/expression';
-import { appendUserInGoogleSheet, findUserInGoogleSheet } from '../../util/google.sheets';
+import { appendUserInGoogleSheet, getAuthInGoogleSheet } from '../../util/google.sheets';
+import Spinner from '../Common/Spinner';
 import SignupHeader from './SignupHeader';
 
 const SignupForm = styled.form`
@@ -23,6 +24,10 @@ const SignupForm = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    @media (max-width: 768px) {
+        width: 300px;
+    }
 `;
 
 const SignupLabel = styled.div`
@@ -57,20 +62,35 @@ const SignupInput = styled.input`
     } 
 `;
 
-const SignupButton = styled.button`
-    padding: 12px;
+const SignupButtonWrapper = styled.div`
     margin: 10px 0;
+    width: 100%;
     border-radius: 4px;
     border: 1px solid #dee2e6;
     background-color: #38d9a9;
     cursor: pointer;
+
+    *{
+        width: 100%;
+        padding: 5px;
+    }
+
+    button {
+        padding: 12px;
+    }
+`
+
+const SignupButton = styled.button`
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
     font-size: 18px;
-    width: 100%;
+    text-align: center;
 
     &:hover {
         background: #63e6be;
     }
-`;
+`
 
 const SignupTemplate = () => {
     const dispatch = useAuthDispatch();
@@ -81,6 +101,7 @@ const SignupTemplate = () => {
     const [lastPassword, setLastPassword] = useState('');
 
     const [disable, setDisable] = useState(false);
+    const [loader, setLoader] = useState(false);
 
     const [emailError, setEmailError] = useState('');
     const [nameError, setNameError] = useState('');
@@ -124,7 +145,7 @@ const SignupTemplate = () => {
     const onLastPassword = (event) => {
         const { target: { value } } = event;
 
-        setLastPassword(event.target.value)
+        setLastPassword(value);
 
         if (value === '')
             setLastPasswordError('비밀번호를 입력하세요.')
@@ -155,22 +176,24 @@ const SignupTemplate = () => {
             setNameError(error)
         }
 
-        if (firstPasswordError === '') {
+        if (firstPassword === '') {
             error = "비밀번호를 입력하세요."
             setFirstPasswordError(error)
         }
 
-        if (lastPasswordError === '') {
+        if (lastPassword === '') {
             error = "비밀번호를 입력하세요."
             setLastPasswordError(error);
         }
 
         if (errors + error === '') {
+            setLoader(true)
             setDisable(true)
-            const _auth = await findUserInGoogleSheet(email)
+            const _auth = await getAuthInGoogleSheet(email)
 
             if (_auth) {
                 setEmailError('이미 존재하는 이메일 계정입니다.')
+                setLoader(false)
                 setDisable(false)
             } else {
                 const auth = await appendUserInGoogleSheet(email, name, firstPassword);
@@ -218,7 +241,13 @@ const SignupTemplate = () => {
                     }
                 </SignupLabel>
                 <SignupInput type="password" error={lastPasswordError} value={lastPassword} onChange={onLastPassword} disabled={disable} />
-                <SignupButton type="submit" disabled={disable}>완료</SignupButton>
+                <SignupButtonWrapper>
+                    {
+                        loader
+                            ? <Spinner width={36} height={36} type="Oval" color="#3d66ba" />
+                            : <SignupButton type="submit" disabled={disable}>회원가입</SignupButton>
+                    }
+                </SignupButtonWrapper>
             </SignupForm>
         </>
     )

@@ -27,7 +27,7 @@ const getToday = () => {
 export const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
 export const passwordExp = /^(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{10,12}$/;
 
-export const findUserInGoogleSheet = (email) =>
+export const getAuthInGoogleSheet = (email) =>
     new Promise(async (resolve, reject) => {
         let auth = null;
         if (email) {
@@ -94,52 +94,126 @@ export const getTodosFromGoogleSheet = (uuid) =>
             .catch(error => reject(error))
     })
 
-export const appendGroupToGoogleSheet = (uuid, group_title) =>
+export const appendGroupInGoogleSheet = (group) =>
     new Promise(async (resolve, reject) => {
-        const group = {
-            uuid,
-            group_seq: `G-${v4()}`,
-            group_title,
-            items: '[]'
-        }
-
         await api.init();
-        await api.doc.sheetsByTitle[api.sheet.todo].addRow(group)
+        await api.doc.sheetsByTitle[api.sheet.todo].addRow({ ...group, todos: '[]' })
             .then(() => resolve(group))
             .catch(error => reject(error));
     });
 
-export const editGroupTitleInGoogleSheet = (uuid, group_seq, title) =>
+export const editGroupTitleInGoogleSheet = (uuid, group_id, editTitle) =>
     new Promise(async (resolve, reject) => {
         await api.init();
         await api.doc.sheetsByTitle[api.sheet.todo].getRows()
             .then(async groups => {
                 let index = 0;
                 groups.forEach((group, _index) => {
-                    if (group.uuid === uuid && group.group_seq === group_seq) {
+                    if (group.uuid === uuid && group.id === group_id) {
                         index = _index
+                        return
                     }
                 });
-                groups[index].group_title = title;
+                groups[index].title = editTitle;
                 await groups[index].save();
                 resolve();
             })
             .catch(error => reject(error));
     });
 
-export const removeGroupFromGoogleSheet = (uuid, group_seq) =>
+export const removeGroupFromGoogleSheet = (uuid, group_id) =>
     new Promise(async (resolve, reject) => {
         await api.init();
         await api.doc.sheetsByTitle[api.sheet.todo].getRows()
             .then(async groups => {
                 let index = 0;
                 groups.forEach((group, _index) => {
-                    if (group.uuid === uuid && group.group_seq === group_seq) {
+                    if (group.uuid === uuid && group.id === group_id) {
                         index = _index
                         return
                     }
                 });
                 await groups[index].delete();
+                resolve();
+            })
+            .catch(error => reject(error));
+    })
+
+export const appendTodoInGoogleSheet = (uuid, group_id, todo) =>
+    new Promise(async (resolve, reject) => {
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].getRows()
+            .then(async groups => {
+                let index = 0;
+                groups.forEach((group, _index) => {
+                    if (group.uuid === uuid && group.id === group_id) {
+                        index = _index
+                        return
+                    }
+                });
+                const todos = [...JSON.parse(groups[index].todos), todo];
+                groups[index].todos = JSON.stringify(todos);
+                await groups[index].save();
+                resolve();
+            })
+            .catch(error => reject(error));
+    })
+
+export const doneTodoInGoogleSheet = (uuid, group_id, todo_id, done) =>
+    new Promise(async (resolve, reject) => {
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].getRows()
+            .then(async groups => {
+                let index = 0;
+                groups.forEach((group, _index) => {
+                    if (group.uuid === uuid && group.id === group_id) {
+                        index = _index
+                        return;
+                    }
+                });
+                const todos = [...JSON.parse(groups[index].todos)].map(todo => todo.id === todo_id ? { ...todo, done } : todo)
+                groups[index].todos = JSON.stringify(todos);
+                await groups[index].save();
+                resolve();
+            })
+            .catch(error => reject(error))
+    })
+
+export const removeTodoFromGoogleSheet = (uuid, group_id, todo_id) =>
+    new Promise(async (resolve, reject) => {
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].getRows()
+            .then(async groups => {
+                let index = 0;
+                groups.forEach((group, _index) => {
+                    if (group.uuid === uuid && group.id === group_id) {
+                        index = _index
+                        return;
+                    }
+                });
+                const todos = [...JSON.parse(groups[index].todos)].filter(todo => todo.id !== todo_id);
+                groups[index].todos = JSON.stringify(todos);
+                await groups[index].save();
+                resolve();
+            })
+            .catch(error => reject(error));
+    })
+
+export const editTodoTextInGoogleSheet = (uuid, group_id, todo_id, editText) =>
+    new Promise(async (resolve, reject) => {
+        await api.init();
+        await api.doc.sheetsByTitle[api.sheet.todo].getRows()
+            .then(async groups => {
+                let index = 0;
+                groups.forEach((group, _index) => {
+                    if (group.uuid === uuid && group.id === group_id) {
+                        index = _index
+                        return;
+                    }
+                });
+                const todos = [...JSON.parse(groups[index].todos)].map(todo => todo.id === todo_id ? { ...todo, text: editText } : todo);
+                groups[index].todos = JSON.stringify(todos);
+                await groups[index].save();
                 resolve();
             })
             .catch(error => reject(error));

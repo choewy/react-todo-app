@@ -12,13 +12,20 @@ import TodoRoute from './routes/TodoRoute';
 const GlobalStyle = createGlobalStyle`
   body {
     background: #e9ecef;
+    width: 100%;
   }
+`
+const Container = styled.main`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `
 
 const App = () => {
   const auth = useAuthState();
   return (
-    <>
+    <Container>
+      <title>TODO</title>
       <GlobalStyle />
       <Header auth={auth} />
       <Switch>
@@ -28,7 +35,7 @@ const App = () => {
         <Route path="/" component={Page404} />
       </Switch>
       <Footer />
-    </>
+    </Container>
   );
 }
 

@@ -22,7 +22,7 @@ const NavbarItem = styled.li`
 const NavbarLink = styled(Link)`
     display: block;
     color: #fff;
-    text-decoration: none;
+    text-decoration: none; 
     padding: 0 20px;
     text-align: center;
 `

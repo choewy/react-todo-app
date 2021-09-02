@@ -25,7 +25,6 @@ const App = () => {
   const auth = useAuthState();
   return (
     <Container>
-      <title>TODO</title>
       <GlobalStyle />
       <Header auth={auth} />
       <Switch>

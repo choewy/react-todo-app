@@ -118,17 +118,17 @@ const LoginOtherButtonsWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 auto;
+    margin: 10px auto;
 
     * {
-        margin: -10px 20px;
+        margin: 0 20px;
     }
 
     @media (max-width: 768px) {
         width: 300px;
 
         * {
-            margin: -10px 10px;
+            margin: 0 10px;
         }
     }
 `
@@ -244,11 +244,11 @@ const LoginTemplate = () => {
                             : <LoginButton type="submit" disabled={disable}>로그인</LoginButton>
                     }
                 </LoginButtonWrapper>
+                <LoginOtherButtonsWrapper>
+                    <Link to="/auth/signup/">회원가입</Link>
+                    <Link to="/auth/find-password/">비밀번호 찾기</Link>
+                </LoginOtherButtonsWrapper>
             </LoginForm >
-            <LoginOtherButtonsWrapper>
-                <Link to="/auth/signup/">회원가입</Link>
-                <Link to="/auth/find-password/">비밀번호 찾기</Link>
-            </LoginOtherButtonsWrapper>
         </>
     )
 }

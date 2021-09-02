@@ -7,7 +7,7 @@ import Spinner from '../Common/Spinner';
 import SignupHeader from './SignupHeader';
 
 const SignupForm = styled.form`
-    background: #f8f9fa;
+    background: white;
 
     width: 100%;
     max-width: 500px;

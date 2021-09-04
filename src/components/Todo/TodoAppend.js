@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdSend } from 'react-icons/md';
 import styled, { css } from 'styled-components';
 import { useAuthState } from '../../context/AuthContext';
 import { useTodoDispatch } from '../../context/TodoContext';
@@ -31,6 +31,10 @@ const TodoAppendInput = styled.input`
     outline: none;
     font-size: 18px;
     box-sizing: border-box;
+
+    @media (max-width: 768px) {
+        font-size: 15px;
+    }
 `;
 
 const TodoAppendButton = styled.button`
@@ -81,6 +85,20 @@ const TodoAppendButton = styled.button`
             `
     }
 `;
+
+const TodoAppendSubmitButton = styled.button`
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 25px;
+    background-color: #38d9a9;
+    padding: 5px;
+    padding-top: 10px;
+    cursor: pointer;
+    width: 60px;
+    &:hover {
+        background: #63e6be;
+    }
+`
 
 const TodoAppend = ({ group_id }) => {
     const auth = useAuthState();
@@ -135,12 +153,17 @@ const TodoAppend = ({ group_id }) => {
                                         color="#3d66ba"
                                     />
                                 ) : (
-                                    <TodoAppendInput
-                                        autoFocus
-                                        placeholder="새로운 할 일 추가"
-                                        value={text}
-                                        onChange={event => setText(event.target.value)}
-                                    />
+                                    <>
+                                        <TodoAppendInput
+                                            autoFocus
+                                            placeholder="새로운 할 일 입력"
+                                            value={text}
+                                            onChange={event => setText(event.target.value)}
+                                        />
+                                        <TodoAppendSubmitButton type="send">
+                                            <MdSend />
+                                        </TodoAppendSubmitButton>
+                                    </>
                                 )
                         }
                     </TodoAppendForm>

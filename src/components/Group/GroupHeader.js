@@ -14,6 +14,10 @@ const GroupHeaderWrapper = styled.div`
         font-size: 36px;
         text-align: center;
         color: #343a40;
+
+        @media (max-width: 768px) {
+            font-size: 20px;
+        }
     }
     .day {
         margin-top: 4px;

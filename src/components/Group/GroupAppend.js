@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdSend } from 'react-icons/md';
 import styled, { css } from 'styled-components';
 import { useTodoDispatch } from '../../context/TodoContext';
 import { v4 } from 'uuid';
@@ -31,6 +31,10 @@ const GroupAppendInput = styled.input`
     outline: none;
     font-size: 18px;
     box-sizing: border-box;
+
+    @media (max-width: 768px) {
+        font-size: 15px;
+    }
 `;
 
 const GroupAppendButton = styled.button`
@@ -81,6 +85,20 @@ const GroupAppendButton = styled.button`
             `
     }
 `;
+
+const GroupAppendSubmitButton = styled.button`
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 25px;
+    background-color: #38d9a9;
+    padding: 5px;
+    padding-top: 10px;
+    cursor: pointer;
+    width: 60px;
+    &:hover {
+        background: #63e6be;
+    }
+`
 
 const GroupAppend = () => {
     const auth = useAuthState();
@@ -134,12 +152,17 @@ const GroupAppend = () => {
                                     color="#3d66ba"
                                 />
                             ) : (
-                                <GroupAppendInput
-                                    autoFocus
-                                    placeholder="새 그룹 추가"
-                                    value={title}
-                                    onChange={event => setTitle(event.target.value)}
-                                />
+                                <>
+                                    <GroupAppendInput
+                                        autoFocus
+                                        placeholder="새 그룹 입력"
+                                        value={title}
+                                        onChange={event => setTitle(event.target.value)}
+                                    />
+                                    <GroupAppendSubmitButton type="submit">
+                                        <MdSend />
+                                    </GroupAppendSubmitButton>
+                                </>
                             )
                     }
                 </GroupAppendForm>

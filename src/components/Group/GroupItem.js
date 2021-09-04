@@ -12,11 +12,18 @@ const GroupButtonWrapper = styled.div`
     align-items: center;
     justify-content: center;
     width: 50px;
+
+    div {
+        font-size: 19px;
+
+        @media (max-width: 768px) {
+            font-size: 15px;
+        }
+    }
 `
 
 const RemoveButton = styled.div`
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -29,7 +36,6 @@ const RemoveButton = styled.div`
 
 const EditButton = styled.div`
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -42,7 +48,6 @@ const EditButton = styled.div`
 
 const SaveButton = styled.div`
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -53,11 +58,10 @@ const SaveButton = styled.div`
 
 const CancelButton = styled.div`
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
-    &:hover {x
+    &:hover {
         color: #ff6b6b;
     }
 `;
@@ -78,6 +82,10 @@ const GroupText = styled.div`
     flex: 1;
     font-size: 20px;
     color: #495057;
+
+    @media (max-width: 768px) {
+        font-size: 15px;
+    }
 `;
 
 const GroupLink = styled(Link)`
@@ -97,6 +105,10 @@ const GroupInput = styled.input`
     font-size: 20px;
     color: #495057;
     margin-left: 5px;
+
+    @media (max-width: 768px) {
+        font-size: 15px;
+    }
 `;
 
 const GroupItem = ({ group_id, title }) => {

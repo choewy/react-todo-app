@@ -15,12 +15,18 @@ const TodoHeaderWrapper = styled.div`
         font-size: 36px;
         text-align: center;
         color: #343a40;
+
+        @media (max-width: 768px) {
+            font-size: 20px;
+        }
     }
+
     .day {
         margin-top: 4px;
         color: #868e96;
         font-size: 21px;
     }
+
     .tasks-left {
         color: #20c997;
         font-size: 18px;

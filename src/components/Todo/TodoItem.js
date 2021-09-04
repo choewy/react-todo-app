@@ -11,6 +11,14 @@ const TodoButtonWrapper = styled.div`
     align-items: center;
     justify-content: center;
     width: 50px;
+
+    div {
+        font-size: 19px;
+
+        @media (max-width: 768px) {
+            font-size: 15px;
+        }
+    }
 `
 
 const RemoveButton = styled.div`
@@ -18,7 +26,6 @@ const RemoveButton = styled.div`
     align-items: center;
     justify-content: center;
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -34,7 +41,6 @@ const EditButton = styled.div`
     align-items: center;
     justify-content: center;
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -50,7 +56,6 @@ const SaveButton = styled.div`
     align-items: center;
     justify-content: center;
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -64,7 +69,6 @@ const CancelButton = styled.div`
     align-items: center;
     justify-content: center;
     color: #dee2e6;
-    font-size: 19px;
     cursor: pointer;
     margin-left: 10px;
 
@@ -124,6 +128,10 @@ const TodoText = styled.div`
             color: #ced4da;
         `
     }
+
+    @media (max-width: 768px) {
+        font-size: 15px;
+    }
 `;
 
 const TodoForm = styled.form`
@@ -137,6 +145,10 @@ const TodoInput = styled.input`
     width: 100%;
     color: #495057;
     font-size: 20px;
+
+    @media (max-width: 768px) {
+        font-size: 15px;
+    }
 `;
 
 const TodoItem = ({ group_id, todo_id, text, done }) => {

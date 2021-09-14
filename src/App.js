@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch } from "react-router";
+import Head from "./component/common/Head";
+import Header from "./component/common/Header";
+import HomePage from "./pages/HomePage";
+import AuthPage from "./pages/AuthPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import TodoPage from "./pages/TodoPage";
+import Aside from "./component/common/Aside";
+import { useRef } from "react";
 
-function App() {
+const App = () => {
+
+  const asideElement = useRef();
+  const containerElement = useRef();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Head />
+      <Header props={{ asideElement, containerElement }} />
+      <main>
+        <div ref={asideElement} className="aside">
+          <Aside />
+        </div>
+        <div ref={containerElement} className="container">
+          <Switch>
+            <Route exact={true} path="/" component={HomePage} />
+            <Route path="/auth" component={AuthPage} />
+            <Route path="/todo" component={TodoPage} />
+            <Route path="/" component={NotFoundPage} />
+          </Switch>
+        </div>
+      </main>
+    </>
   );
 }
 

@@ -1,7 +1,7 @@
 const About = () => {
     return (
         <div className="description">
-            Description
+            할 일을 작성해보세요!
         </div>
     )
 }

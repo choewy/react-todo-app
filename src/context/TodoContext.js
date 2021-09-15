@@ -5,9 +5,9 @@ const init = [];
 const reducer = (state, action) => {
     switch (action.type) {
         case "get":
-            return state;
+            return action.groups;
         case "group_append":
-            return state;
+            return [...state, action.group];
         case "group_change":
             return state;
         case "group_remove":

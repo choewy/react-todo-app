@@ -18,6 +18,7 @@ const HelpPassword = () => {
 
     const onSubmit = event => {
         event.preventDefault();
+        setIng(false);
     }
 
     return (

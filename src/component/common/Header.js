@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuthDispatch, useAuthState } from "../../context/AuthContext";
 import { MdMenu } from 'react-icons/md';
+import { useEffect } from "react/cjs/react.development";
 
 const Header = ({ props }) => {
 
@@ -14,16 +15,26 @@ const Header = ({ props }) => {
 
         if (left === "0px") {
             asideElement.current.style.animation = "aside-hide 0.5s ease";
-            asideElement.current.style.left = "-200px";
+            asideElement.current.style.left = "-400px";
             containerElement.current.style.animation = "container-maximum 0.5s ease"
             containerElement.current.style.marginLeft = "0px"
         } else {
             asideElement.current.style.animation = "aside-show 0.5s ease";
             asideElement.current.style.left = "0px";
             containerElement.current.style.animation = "container-minimum 0.5s ease"
-            containerElement.current.style.marginLeft = "200px"
+            containerElement.current.style.marginLeft = "400px"
         }
     }
+
+    useEffect(() => {
+        if (asideElement.current) {
+            asideElement.current.style.left = "0px";
+        }
+
+        if (containerElement.current) {
+            containerElement.current.style.marginLeft = "400px";
+        }
+    })
 
     return (
         <header>
@@ -40,7 +51,6 @@ const Header = ({ props }) => {
                             <Link to="/auth/login">로그인</Link>
                             <Link to="/auth/signup">회원가입</Link>
                         </>) : (<>
-                            <Link to='/todo'>할 일</Link>
                             <Link to='/auth/login' onClick={() => dispatch({ type: "logout" })}>
                                 로그아웃
                             </Link>

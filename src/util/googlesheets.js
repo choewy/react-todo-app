@@ -85,11 +85,17 @@ export const googleSheetGroup = (uuid) =>
                 const row = rows.filter(row => row.uuid === uuid);
                 const groups = [];
                 row.forEach(row => {
-                    const group = [];
+                    const group = {};
+                    const todos = JSON.parse(row.todos)
                     headers.todo.map(header => header === 'todos'
-                        ? group[header] = JSON.parse(row[header])
+                        ? group[header] = todos
                         : group[header] = row[header]
                     );
+                    todos.length === 0
+                        ? group['state'] = 'new'
+                        : todos.filter(todo => todo.done === false).length > 0
+                            ? group['state'] = 'ing'
+                            : group['state'] = 'done'
                     groups.push(group);
                 });
                 resolve(groups);
@@ -97,8 +103,13 @@ export const googleSheetGroup = (uuid) =>
             .catch(error => reject(error));
     });
 
-export const googleSheetAppendGroup = (group) =>
+export const googleSheetAppendGroup = (uuid, title) =>
     new Promise(async (resolve, reject) => {
+        const group = {
+            uuid, title,
+            id: `G-${v4()}`,
+            todos: []
+        }
         await init();
         await doc.sheetsByTitle[sheets.todo].addRow({ ...group, todos: '[]' })
             .then(() => resolve(group))

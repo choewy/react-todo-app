@@ -6,20 +6,60 @@ const reducer = (state, action) => {
     switch (action.type) {
         case "get":
             return action.groups;
+
         case "group_append":
             return [...state, action.group];
-        case "group_change":
-            return state;
-        case "group_remove":
-            return state;
+
+        case "group_edit":
+            return state.map(group => group.id === action.groupId
+                ? { ...group, title: action.title }
+                : group);
+
+        case "group_delete":
+            return state.filter(group => group.id !== action.groupId);
+
         case "todo_append":
-            return state;
-        case "todo_change":
-            return state;
-        case "todo_done":
-            return state;
-        case "todo_remove":
-            return state;
+            return state.map(group => group.id === action.groupId ? { ...group, todos: [...group.todos, action.todo] } : group)
+
+        case "todo_edit":
+            return state.map(group => group.id === action.groupId
+                ? {
+                    ...group, todos: group.todos.map(todo => todo.id === action.todoId
+                        ? { ...todo, text: action.text }
+                        : todo)
+                }
+                : group);
+
+        case "todo_check":
+            state = state.map(group => group.id === action.groupId
+                ? {
+                    ...group, todos: group.todos.map(todo => todo.id === action.todoId
+                        ? { ...todo, done: action.done }
+                        : todo)
+                }
+                : group);
+
+            return state.map(group => group.id === action.groupId
+                ? group.todos.length === 0
+                    ? { ...group, state: "new" }
+                    : group.todos.filter(todo => todo.done === false).length > 0
+                        ? { ...group, state: "ing" }
+                        : { ...group, state: "done" }
+                : group);
+
+        case "todo_delete":
+            state = state.map(group => group.id === action.groupId
+                ? { ...group, todos: group.todos.filter(todo => todo.id !== action.todoId) }
+                : group);
+
+            return state.map(group => group.id === action.groupId
+                ? group.todos.length === 0
+                    ? { ...group, state: "new" }
+                    : group.todos.filter(todo => todo.done === false).length > 0
+                        ? { ...group, state: "ing" }
+                        : { ...group, state: "done" }
+                : group);
+
         default:
             return state;
     }

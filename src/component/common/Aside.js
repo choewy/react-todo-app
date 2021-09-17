@@ -5,89 +5,72 @@ import { Link } from "react-router-dom";
 import { useAuthState } from "../../context/AuthContext";
 import { useTodoDispatch, useTodoState } from "../../context/TodoContext";
 import { googleSheetAppendGroup, googleSheetGroup } from "../../util/googlesheets";
+import { useAppDispatch, useAppState } from "../../context/AppContext";
+import Spinner from "./Spinner";
 
 const Aside = () => {
     const groupListElement = useRef();
     const groupAppendElement = useRef();
 
+    const app = useAppState();
     const auth = useAuthState();
 
     const groups = useTodoState();
-    const dispatch = useTodoDispatch();
+    const todoDispatch = useTodoDispatch();
+    const appDispatch = useAppDispatch();
 
-    const [trigger, setTrigger] = useState();
+    const [icon, setIcon] = useState(<></>);
     const [title, setTitle] = useState('');
+
+    const [spinner, setSpinner] = useState(false);
+
+    const onLink = () => {
+        appDispatch({ type: 'hide_aside' });
+    }
 
     const fetchGroups = useCallback(async () => {
         if (auth !== null) {
+            setSpinner(true);
             const _groups = await googleSheetGroup(auth.uuid);
-            dispatch({ type: 'get', groups: _groups })
-            console.log('fetchGroups');
-        }
-    }, [auth, dispatch])
+            todoDispatch({ type: 'get', groups: _groups });
+            setIcon(<MdExpandLess />)
+            setSpinner(false);
+        };
+    }, [auth, todoDispatch]);
 
-    const onTrigger = (visibility) => {
-        if (visibility === 'hidden') {
-            setTrigger(<MdExpandLess />)
-            return {
-                animation: "groups-show 0.5s ease",
-                visibility: "visible",
-                height: '55vh',
-                padding: '10px',
-                margin: '2px 0',
-                display: 'flex'
-            }
+    const onGroups = () => {
+        if (app.groupList && groupListElement.current && groupAppendElement.current) {
+            setIcon(<MdExpandMore />);
+            appDispatch({ type: 'hide_groupList' });
         } else {
-            setTrigger(<MdExpandMore />)
-            return {
-                animation: "groups-hide 0.5s ease",
-                visibility: "hidden",
-                height: '0vh',
-                padding: '0px',
-                margin: '0px 0',
-                display: 'none'
-            };
+            setIcon(<MdExpandLess />);
+            appDispatch({ type: 'show_groupList' });
         };
     };
 
-    const onGroups = () => {
-        const { animation, visibility, height, padding, margin, display } = onTrigger(groupListElement.current.style.visibility)
-        groupListElement.current.style.animation = animation;
-        groupListElement.current.style.visibility = visibility;
-        groupListElement.current.style.height = height;
-        groupListElement.current.style.padding = padding;
-        groupListElement.current.style.margin = margin;
-        groupAppendElement.current.style.display = display;
-    }
-
     const onGithub = () => {
         window.open('https://github.com/choewy', '_blank');
-    }
-
-    useEffect(() => {
-        if (groupListElement.current) {
-            const { animation, visibility, height, padding, margin, display } = onTrigger(auth === null ? 'visible' : 'hidden');
-            groupListElement.current.style.animation = animation;
-            groupListElement.current.style.visibility = visibility;
-            groupListElement.current.style.height = height;
-            groupListElement.current.style.padding = padding;
-            groupListElement.current.style.margin = margin;
-            groupAppendElement.current.style.display = display;
-            console.log('set elements ref');
-        }
-        fetchGroups();
-    }, [fetchGroups, auth])
+    };
 
     const onNewGroup = async (event) => {
         event.preventDefault();
-        await googleSheetAppendGroup(auth.uuid, title)
-            .then(group => {
-                dispatch({ type: 'group_append', group: { ...group, state: "new" } });
-                groupListElement.current.scrollTop = groupListElement.current.scrollHeight;
-                setTitle('');
-            })
-            .catch(error => console.log(error));
-    }
+        if (title !== '') {
+            setSpinner(true);
+            await googleSheetAppendGroup(auth.uuid, title)
+                .then(group => {
+                    todoDispatch({ type: 'group_append', group: { ...group, state: "new" } });
+                    setTitle('');
+                })
+                .catch(error => console.log(error));
+            setSpinner(false);
+            groupListElement.current.scrollTop = groupListElement.current.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        fetchGroups();
+        appDispatch({ type: "init_groupList", auth, groupListElement, groupAppendElement });
+    }, [auth, appDispatch, fetchGroups]);
 
     return (
         <>
@@ -98,39 +81,34 @@ const Aside = () => {
                         ? <></>
                         : (<li className="aside-groups" onClick={onGroups}>
                             <div>Todo</div>
-                            {trigger}
+                            {icon}
                         </li>)
                 }
-                <ul ref={groupListElement} className="aside-group-list">
-                    {
-                        groups.map((group, index) =>
-                            <li key={index}>
+                {
+                    spinner
+                        ? <Spinner className="spinner-aside" />
+                        : <>
+                            <ul ref={groupListElement} className="aside-group-list">
                                 {
-                                    group.state === "done"
-                                        ?
-                                        <div className="aside-group-item">
-                                            <div className="aside-group-checkbox">
-                                                <MdDone style={{ color: '#38d9a9' }} />
+                                    groups.map((group, index) =>
+                                        <li key={index}>
+                                            <div className="aside-group-item" state={group.state}>
+                                                <div className="aside-group-checkbox">
+                                                    <MdDone />
+                                                </div>
+                                                <Link to={`/todo/?groupId=${group.id}`} onClick={onLink}>{group.title}</Link>
                                             </div>
-                                            <Link to={`/todo/?groupId=${group.id}`} style={{ color: "gray" }}>{group.title}</Link>
-                                        </div>
-                                        :
-                                        <div className="aside-group-item">
-                                            <div className="aside-group-checkbox">
-                                                <MdDone style={{ color: 'gray' }} />
-                                            </div>
-                                            <Link to={`/todo/?groupId=${group.id}`}>{group.title}</Link>
-                                        </div>
+                                        </li>)
                                 }
-                            </li>)
-                    }
-                </ul>
-                <form ref={groupAppendElement} className="aside-group-form" onSubmit={onNewGroup}>
-                    <input placeholder="새 그룹의 제목을 입력하세요." type='text' value={title} onChange={(event) => setTitle(event.target.value)} />
-                    <button type='submit'>
-                        <MdKeyboardReturn />
-                    </button>
-                </form>
+                            </ul>
+                            <form ref={groupAppendElement} className="aside-group-form" onSubmit={onNewGroup}>
+                                <input placeholder="새 그룹의 제목을 입력하세요." type='text' value={title} onChange={(event) => setTitle(event.target.value)} />
+                                <button type='submit'>
+                                    <MdKeyboardReturn />
+                                </button>
+                            </form>
+                        </>
+                }
                 <li><Link to='/about'>About</Link></li>
                 <li onClick={onGithub} ><FaGithub /> Github</li>
             </ul>

@@ -5,14 +5,17 @@ import { AuthProvider } from './context/AuthContext';
 import { TodoProvider } from './context/TodoContext';
 import App from './App';
 import './index.css';
+import { AppProvider } from './context/AppContext';
 
 ReactDOM.render(
   <HashRouter>
-    <AuthProvider>
-      <TodoProvider>
-        <App />
-      </TodoProvider>
-    </AuthProvider>
+    <AppProvider>
+      <AuthProvider>
+        <TodoProvider>
+          <App />
+        </TodoProvider>
+      </AuthProvider>
+    </AppProvider>
   </HashRouter>,
   document.getElementById('root')
 );

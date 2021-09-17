@@ -32,10 +32,10 @@ const Home = () => {
                 init
                     ? (
                         <div className="posts">
-                            <h1>공지사항</h1>
                             {
                                 posts.map((post, index) => (
                                     <div key={index} className="post">
+                                        <h1>공지사항</h1>
                                         <div className="post-header">
                                             <h1>{post.title}</h1>
                                             <p>{post.date}</p>

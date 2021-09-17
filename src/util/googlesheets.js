@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 
 const doc = new GoogleSpreadsheet(sheetId);
 const sheets = {
-    user: 'user',
+    user: 'auth',
     todo: 'todo',
     home: 'home'
 };
@@ -116,14 +116,14 @@ export const googleSheetAppendGroup = (uuid, title) =>
             .catch(error => reject(error));
     });
 
-export const googleSheetEditGroup = (uuid, groupId, editTitle) =>
+export const googleSheetEditGroup = (groupId, editTitle) =>
     new Promise(async (resolve, reject) => {
         await init();
         await doc.sheetsByTitle[sheets.todo].getRows()
             .then(async groups => {
                 let index = null;
                 groups.forEach((group, i) => {
-                    if (group.uuid === uuid && group.id === groupId) {
+                    if (group.id === groupId) {
                         index = i;
                         return;
                     };
@@ -135,14 +135,14 @@ export const googleSheetEditGroup = (uuid, groupId, editTitle) =>
             .catch(error => reject(error));
     });
 
-export const googleSheetRemoveGroup = (uuid, groupId) =>
+export const googleSheetDeleteGroup = (groupId) =>
     new Promise(async (resolve, reject) => {
         await init();
         await doc.sheetsByTitle[sheets.todo].getRows()
             .then(async groups => {
                 let index = null;
                 groups.forEach((group, i) => {
-                    if (group.uuid === uuid && group.id === groupId) {
+                    if (group.id === groupId) {
                         index = i;
                         return;
                     };
@@ -154,14 +154,20 @@ export const googleSheetRemoveGroup = (uuid, groupId) =>
             .catch(error => reject(error));
     });
 
-export const googleSheetAppendTodo = (uuid, groupId, todo) =>
+export const googleSheetAppendTodo = (groupId, text) =>
     new Promise(async (resolve, reject) => {
+        const todo = {
+            text,
+            id: `T-${v4()}`,
+            done: false
+        };
+
         await init();
         await doc.sheetsByTitle[sheets.todo].getRows()
             .then(async groups => {
                 let index = null;
                 groups.forEach((group, i) => {
-                    if (group.uuid === uuid && group.id === groupId) {
+                    if (group.id === groupId) {
                         index = i;
                         return;
                     };
@@ -169,24 +175,24 @@ export const googleSheetAppendTodo = (uuid, groupId, todo) =>
                 const todos = [...JSON.parse(groups[index].todos), todo];
                 groups[index].todos = JSON.stringify(todos);
                 await groups[index].save();
-                resolve(todos);
+                resolve(todo);
             })
             .catch(error => reject(error));
     });
 
-export const googleSheetEditTodo = (uuid, groupId, todoId, editText) =>
+export const googleSheetEditTodo = (groupId, todoId, text) =>
     new Promise(async (resolve, reject) => {
         await init();
         await doc.sheetsByTitle[sheets.todo].getRows()
             .then(async groups => {
                 let index = null;
                 groups.forEach((group, i) => {
-                    if (group.uuid === uuid && group.id === groupId) {
+                    if (group.id === groupId) {
                         index = i;
                         return;
                     };
                 });
-                const todos = [...JSON.parse(groups[index].todos)].map(todo => todo.id === todoId ? { ...todo, text: editText } : todo);
+                const todos = [...JSON.parse(groups[index].todos)].map(todo => todo.id === todoId ? { ...todo, text } : todo);
                 groups[index].todos = JSON.stringify(todos);
                 await groups[index].save();
                 resolve(todos);
@@ -194,14 +200,14 @@ export const googleSheetEditTodo = (uuid, groupId, todoId, editText) =>
             .catch(error => reject(error));
     });
 
-export const googleSheetDoneTodo = (uuid, groupId, todoId, done) =>
+export const googleSheetDoneTodo = (groupId, todoId, done) =>
     new Promise(async (resolve, reject) => {
         await init();
         await doc.sheetsByTitle[sheets.todo].getRows()
             .then(async groups => {
                 let index = null;
                 groups.forEach((group, i) => {
-                    if (group.uuid === uuid && group.id === groupId) {
+                    if (group.id === groupId) {
                         index = i;
                         return;
                     };
@@ -214,14 +220,14 @@ export const googleSheetDoneTodo = (uuid, groupId, todoId, done) =>
             .catch(error => reject(error));
     });
 
-export const googleSheetRemoveTodo = (uuid, groupId, todoId) =>
+export const googleSheetDeleteTodo = (groupId, todoId) =>
     new Promise(async (resolve, reject) => {
         await init();
         await doc.sheetsByTitle[sheets.todo].getRows()
             .then(async groups => {
                 let index = null;
                 groups.forEach((group, i) => {
-                    if (group.uuid === uuid && group.id === groupId) {
+                    if (group.id === groupId) {
                         index = i;
                         return;
                     };

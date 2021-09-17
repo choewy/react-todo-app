@@ -1,44 +1,21 @@
 import { Link } from "react-router-dom";
 import { useAuthDispatch, useAuthState } from "../../context/AuthContext";
 import { MdMenu } from 'react-icons/md';
-import { useEffect } from "react/cjs/react.development";
+import { useAppDispatch } from "../../context/AppContext";
 
-const Header = ({ props }) => {
+const Header = () => {
 
+    const appDispatch = useAppDispatch();
     const auth = useAuthState();
     const dispatch = useAuthDispatch();
 
-    const { asideElement, containerElement } = props;
-
-    const onIcon = () => {
-        const left = asideElement.current.style.left;
-
-        if (left === "0px") {
-            asideElement.current.style.animation = "aside-hide 0.5s ease";
-            asideElement.current.style.left = "-400px";
-            containerElement.current.style.animation = "container-maximum 0.5s ease"
-            containerElement.current.style.marginLeft = "0px"
-        } else {
-            asideElement.current.style.animation = "aside-show 0.5s ease";
-            asideElement.current.style.left = "0px";
-            containerElement.current.style.animation = "container-minimum 0.5s ease"
-            containerElement.current.style.marginLeft = "400px"
-        }
+    const onAside = () => {
+        appDispatch({ type: 'aside_trigger' });
     }
-
-    useEffect(() => {
-        if (asideElement.current) {
-            asideElement.current.style.left = "0px";
-        }
-
-        if (containerElement.current) {
-            containerElement.current.style.marginLeft = "400px";
-        }
-    })
 
     return (
         <header>
-            <div className="icon" onClick={onIcon}>
+            <div className="icon" onClick={onAside}>
                 <MdMenu />
             </div>
             <div className="title">

@@ -72,7 +72,7 @@ const posts = [
 
 const Archive = () => {
     return (
-        <div className="about">
+        <div className="archive">
             <h1>개발일지</h1>
             {
                 posts.map((post, postIndex) => (

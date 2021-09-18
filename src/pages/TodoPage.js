@@ -17,6 +17,7 @@ const TodoPage = ({ location }) => {
     const query = queryString.parse(location.search);
     const groups = useTodoState();
     const [group, setGroup] = useState(null);
+    console.log(group);
 
     const [spinner, setSpinner] = useState(false)
 
@@ -39,7 +40,7 @@ const TodoPage = ({ location }) => {
                         ? <Spinner className="spinner-todo" />
                         :
                         <div className="todo-page" ><TodoHeader props={{ group, setSpinner }} />
-                            <div ref={todoListElement} className="todo-scroll-area" >
+                            <div ref={todoListElement} className="todo-scroll-area" style={group.todos.length === 0 ? { display: 'none' } : {}}>
                                 {
                                     group.todos.map((todo, index) => (
                                         <TodoBody key={index} props={{ groupId: group.id, todo, setSpinner }} />

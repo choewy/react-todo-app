@@ -25,7 +25,7 @@ const Aside = () => {
     const [spinner, setSpinner] = useState(false);
 
     const onLink = () => {
-        appDispatch({ type: 'hide_aside' });
+        // appDispatch({ type: 'hide_aside' });
     }
 
     const fetchGroups = useCallback(async () => {
@@ -49,7 +49,8 @@ const Aside = () => {
     };
 
     const onGithub = () => {
-        window.open('https://github.com/choewy', '_blank');
+        // window.open('https://github.com/choewy', '_blank');
+        window.open('https://choewy.github.io', '_blank');
     };
 
     const onNewGroup = async (event) => {
@@ -88,7 +89,7 @@ const Aside = () => {
                     spinner
                         ? <Spinner className="spinner-aside" />
                         : <>
-                            <ul ref={groupListElement} className="aside-group-list">
+                            <ul ref={groupListElement} className="aside-group-list" style={groups.length === 0 ? { display: 'none' } : {}}>
                                 {
                                     groups.map((group, index) =>
                                         <li key={index}>
@@ -109,8 +110,8 @@ const Aside = () => {
                             </form>
                         </>
                 }
-                <li><Link to='/about'>About</Link></li>
-                <li onClick={onGithub} ><FaGithub /> Github</li>
+                <li><Link to='/archive'>Archive</Link></li>
+                <li onClick={onGithub} ><FaGithub /> choewy.github.io</li>
             </ul>
         </>
     )

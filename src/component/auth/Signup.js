@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuthDispatch } from "../../context/AuthContext";
 import { emailExp, passwordExp } from "../../util/expression";
 import { googleSheetAppendUser, googleSheetAuth } from "../../util/googlesheets";
+import Spinner from "../common/Spinner";
 
 const Signup = () => {
 
@@ -13,12 +14,12 @@ const Signup = () => {
     const [password, setPassword] = useState({ init: '', last: '' });
 
     const [errors, setErrors] = useState({ email: "", name: "", password: { init: "", last: "" } })
-    const [ing, setIng] = useState(false);
+    const [spinner, setSpinner] = useState(false);
 
     const onEmail = event => {
         const { target: { value } } = event;
         if (value === '') setErrors({ ...errors, email: "이메일을 입력하세요." })
-        else if (value.match(emailExp) === null) setErrors({ ...errors, email: "이메일 형식이 아닙니다" })
+        else if (value.match(emailExp) === null) setErrors({ ...errors, email: "이메일 형식이 아닙니다." })
         else setErrors({ ...errors, email: "" })
 
         setEmail(value);
@@ -61,31 +62,36 @@ const Signup = () => {
         } else if (flags.join('') !== '') {
             setErrors({ email: flags[0], name: flags[1], password: { init: flags[2], last: flags[3] } });
         } else {
-            setIng(true);
+            setSpinner(true);
             if (await googleSheetAuth(email) !== null) {
+                setSpinner(false);
                 setErrors({ ...errors, email: "이미 존재하는 이메일 계정입니다." });
-                setIng(false);
             }
             else {
                 const auth = await googleSheetAppendUser(email, name, password.init);
-                dispatch({ type: "signup", auth })
+                setSpinner(false);
+                dispatch({ type: "signup", auth });
             };
         };
     };
 
     return (
-        <div className="wrapper">
-            <form onSubmit={onSignup}>
-                <input type='text' value={email} placeholder="이메일 주소 입력" onChange={onEmail} disabled={ing} />
-                <label>{errors.email}</label>
-                <input type='text' value={name} placeholder="이름 입력" onChange={onName} disabled={ing} />
-                <label>{errors.name}</label>
-                <input type='password' value={password.init} placeholder="비밀번호 입력" onChange={onPassword} name="init" disabled={ing} />
-                <label>{errors.password.init}</label>
-                <input type='password' value={password.last} placeholder="비밀번호 확인" onChange={onPassword} name="last" disabled={ing} />
-                <label>{errors.password.last}</label>
-                <input type='submit' value="회원가입" disabled={ing} />
-            </form>
+        <div className="signup">
+            {
+                spinner
+                    ? <Spinner className="spinner-auth" />
+                    : <form onSubmit={onSignup}>
+                        <input type='text' value={email} placeholder="이메일 주소 입력" onChange={onEmail} />
+                        <label className="auth-error">{errors.email}</label>
+                        <input type='text' value={name} placeholder="이름 입력" onChange={onName} />
+                        <label className="auth-error">{errors.name}</label>
+                        <input type='password' value={password.init} placeholder="비밀번호 입력" onChange={onPassword} name="init" />
+                        <label className="auth-error">{errors.password.init}</label>
+                        <input type='password' value={password.last} placeholder="비밀번호 확인" onChange={onPassword} name="last" />
+                        <label className="auth-error">{errors.password.last}</label>
+                        <input type='submit' value="회원가입" />
+                    </form>
+            }
         </div>
     );
 };

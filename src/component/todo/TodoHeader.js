@@ -5,7 +5,6 @@ import { useTodoDispatch } from "../../context/TodoContext";
 import { googleSheetDeleteGroup, googleSheetEditGroup } from "../../util/googlesheets";
 
 const TodoHeader = ({ props }) => {
-
     const appDispatch = useAppDispatch();
     const todoDispatch = useTodoDispatch();
 
@@ -55,7 +54,6 @@ const TodoHeader = ({ props }) => {
             .catch(error => console.log(error));
         setSpinner(false);
         appDispatch({ type: 'show_aside' });
-
     };
 
     return (

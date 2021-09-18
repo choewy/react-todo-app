@@ -10,6 +10,7 @@ const reducer = (state, action) => {
             else localStorageRemoveSave();
             return localStorageSetAuth(action.auth);
         case "signup":
+            localStorageSetSave(action.auth.email);
             return localStorageSetAuth(action.auth);
         case "logout":
             return localStorageRemoveAuth();

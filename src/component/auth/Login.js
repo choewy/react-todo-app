@@ -5,6 +5,7 @@ import { encodePassword } from "../../util/encode";
 import { emailExp } from "../../util/expression";
 import { googleSheetAuth } from "../../util/googlesheets";
 import { localStorageGetSave } from "../../util/localstorage";
+import Spinner from "../common/Spinner";
 
 const Login = () => {
 
@@ -16,7 +17,7 @@ const Login = () => {
     const [check, setCheck] = useState(save === null ? false : true);
 
     const [errors, setErrors] = useState({ email: "", password: "" })
-    const [ing, setIng] = useState(false);
+    const [spinner, setSpinner] = useState(false);
 
     const onEmail = event => {
         const { target: { value } } = event;
@@ -53,37 +54,45 @@ const Login = () => {
         } else if (flags.join('') !== '') {
             setErrors({ email: flags[0], password: flags[1] });
         } else {
-            setIng(true);
+            setSpinner(true);
             const auth = await googleSheetAuth(email);
             if (auth === null) {
+                setSpinner(false);
                 setErrors({ ...errors, email: "등록되지 않은 이메일 입니다." });
-                setIng(false);
             }
             else if (await encodePassword(auth.salt, password) !== auth.password) {
+                setSpinner(false);
                 setErrors({ ...errors, password: "비밀번호가 틀립니다." });
-                setIng(false);
             }
-            else dispatch({ type: "login", auth, check });
+            else {
+                setSpinner(false);
+                dispatch({ type: "login", auth, check });
+            };
         };
     };
 
     return (
-        <div className="wrapper">
-            <form onSubmit={onLogin}>
-                <input type='text' value={email} placeholder="이메일 주소 입력" onChange={onEmail} disabled={ing} />
-                <label>{errors.email}</label>
-                <input type='password' value={password} placeholder="비밀번호 입력" onChange={onPassword} disabled={ing} />
-                <label>{errors.password}</label>
-                <div className="checkbox">
-                    <input type='checkbox' checked={check} onChange={onCheck} disabled={ing} />
-                    <label>이메일 기억하기</label>
-                </div>
-                <input type="submit" value="로그인" disabled={ing} />
-            </form>
-            <div className="reset-password">
-                <p>비밀번호를 잊으셨나요?</p>
-                <Link to="/auth/help-password">비밀번호 재설정</Link>
-            </div>
+        <div className="login">
+            {
+                spinner
+                    ? <Spinner className="spinner-auth" />
+                    : <><form onSubmit={onLogin}>
+                        <input type='text' value={email} placeholder="이메일 주소 입력" onChange={onEmail} />
+                        <label className="auth-error">{errors.email}</label>
+                        <input type='password' value={password} placeholder="비밀번호 입력" onChange={onPassword} />
+                        <label className="auth-error">{errors.password}</label>
+                        <div className="checkbox">
+                            <input type='checkbox' checked={check} onChange={onCheck} />
+                            <label className="login-check">이메일 기억하기</label>
+                        </div>
+                        <input type="submit" value="로그인" />
+                    </form>
+                        <div className="reset-password" style={{ display: 'none' }}>
+                            <p>비밀번호를 잊으셨나요?</p>
+                            <Link to="/auth/help-password">비밀번호 재설정</Link>
+                        </div></>
+            }
+
         </div>
     );
 };

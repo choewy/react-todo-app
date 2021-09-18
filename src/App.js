@@ -8,7 +8,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import TodoPage from "./pages/TodoPage";
 import Aside from "./component/common/Aside";
 import { useAppDispatch } from "./context/AppContext";
-import Footer from "./component/common/Footer";
+import ArchivePage from "./pages/ArchivePage";
 
 const App = () => {
 
@@ -35,10 +35,10 @@ const App = () => {
               <Route exact={true} path="/" component={HomePage} />
               <Route path="/auth" component={AuthPage} />
               <Route path="/todo" component={TodoPage} />
+              <Route path="/archive" component={ArchivePage} />
               <Route path="/" component={NotFoundPage} />
             </Switch>
           </div>
-          <Footer />
         </div>
       </main>
     </>

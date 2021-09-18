@@ -22,6 +22,10 @@ header,
 .home,
 .home pre,
 .error404,
+.login,
+.login input,
+.signup,
+.signup input,
 footer,
 .aside-group-list,
 .aside-group-form input,
@@ -111,18 +115,22 @@ main {
 }
 
 footer {
-  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: absolute;
-  bottom: 10px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 15px 0;
+  text-align: center;
 }
 
-footer p {
+.footer-link,
+.footer-link a {
   text-align: center;
-  font-size: 20px;
-  line-height: 10px;
+  text-decoration: none;
+  color: #c0c5ca;
 }
 
 .error404 {
@@ -334,13 +342,25 @@ footer p {
   justify-content: center;
 }
 
-.auth .wrapper {
-  width: 400px;
+.auth-error {
+  font-size: 15px;
+  color: red;
+  margin-top: -5px;
+  margin-bottom: 5px;
 }
 
-.auth form {
-  margin: 100px auto;
-  margin-bottom: 0px;
+.login,
+.signup {
+  width: 400px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login form,
+.signup form {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -348,77 +368,56 @@ footer p {
   justify-content: center;
 }
 
-.auth form input {
-  font-size: 16px;
+.login form input,
+.signup form input {
+  font-size: 18px;
   width: 100%;
   height: 40px;
-  margin: 5px 0;
+  border: 1px solid #525b64;
   padding: 0 10px;
-  border: 1px solid #e9ecef;
-  background-color: rgba(255, 255, 255, 0);
   border-radius: 5px;
+  margin: 10px 0;
 }
 
-.auth form input[type="submit"] {
+.login form input[type="submit"],
+.signup form input[type="submit"] {
   width: 105%;
-  height: 40px;
-  margin: 5px 0;
-  padding: 0;
-  border: 1px solid #e9ecef;
-  border-radius: 5px;
+  cursor: pointer;
+  background-color: #525b64;
+  color: white;
+  font-weight: 800;
+}
+
+.login form input[type="submit"]:hover,
+.signup form input[type="submit"]:hover {
+  width: 105%;
+  cursor: pointer;
+  background-color: white;
+  color: #525b64;
+}
+
+.checkbox {
+  height: 20px;
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0 10px;
   cursor: pointer;
 }
 
-.auth form input[type="submit"]:enabled:hover {
-  background-color: #343a40;
-  color: white;
-}
-
-.auth form label {
-  font-size: 14px;
-  color: red;
-}
-
-.auth form .checkbox {
-  width: 100%;
-  height: 40px;
-  margin: 10px 0;
+.todo-index {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.auth form input[type="checkbox"] {
-  height: 20px;
-  width: 20px;
-  margin-right: 5px;
-}
-
-.auth form .checkbox label {
-  color: #343a40;
-  font-size: 14px;
-  margin: 0;
-}
-
-.auth .reset-password {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.auth .reset-password p {
-  font-size: 14px;
-}
-
-.auth .reset-password a {
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  color: #474f57;
-  text-decoration: none;
-  padding: 16px 0;
+  margin: 20px 0;
 }
 
 .todo-header {
@@ -431,7 +430,7 @@ footer p {
 }
 
 .todo-header[mode="edit"] {
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid 525b64;
 }
 
 .todo-header-form {
@@ -698,6 +697,22 @@ footer p {
   100% {
     width: 100%;
   }
+}
+
+.spinner-home {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 400px;
+  font-size: 80px;
+  color: #ced4da;
+}
+
+.spinner-auth {
+  font-size: 80px;
+  color: #ced4da;
 }
 
 .spinner-todo {

@@ -35,6 +35,26 @@ footer,
   font-family: "Gowun Dodum", sans-serif;
 }
 
+.home,
+.archive {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 20px;
+}
+
+.home h1,
+.archive h1 {
+  margin-bottom: 5px;
+}
+
+.home ul,
+.archive ul {
+  padding-left: 20px;
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
 header {
   display: flex;
   position: fixed;

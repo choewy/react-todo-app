@@ -73,12 +73,11 @@ const posts = [
 const Archive = () => {
     return (
         <div className="archive">
-            <h1>개발일지</h1>
             {
                 posts.map((post, postIndex) => (
                     <div key={postIndex} className="post">
                         <div className="post-header">
-                            <p>{post.date}</p>
+                            <h1>{post.date}</h1>
                         </div>
                         <div className="post-body">
                             <ul>                                {

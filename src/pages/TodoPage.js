@@ -4,10 +4,10 @@ import queryString from 'query-string';
 import { useRef, useState } from "react";
 import { useEffect } from "react";
 import TodoHeader from "../component/todo/TodoHeader";
-import TodoIndex from "../component/todo/TodoIndex";
 import TodoBody from "../component/todo/TodoBody";
 import TodoAppend from "../component/todo/TodoAppend";
 import Spinner from "../component/common/Spinner";
+import Home from "../component/home/Home";
 
 const TodoPage = ({ location }) => {
 
@@ -17,21 +17,22 @@ const TodoPage = ({ location }) => {
     const query = queryString.parse(location.search);
     const groups = useTodoState();
     const [group, setGroup] = useState(null);
-    console.log(group);
 
-    const [spinner, setSpinner] = useState(false)
+    const [init, setInit] = useState(false);
+    const [spinner, setSpinner] = useState(false);
 
     useEffect(() => {
         setGroup(groups.length > 0 ? groups.filter(group => group.uuid === auth.uuid && group.id === query.groupId)[0] : null);
         if (todoListElement.current) {
             todoListElement.current.scrollTop = todoListElement.current.scrollHeight;
         }
+        setInit(true);
     }, [auth, query, groups, group])
 
-    if (group === null) {
+    if (init === false) {
         return <Spinner className="spinner-todo" />
-    } else if (group === undefined) {
-        return <TodoIndex />
+    } else if (group === null || group === undefined) {
+        return <Home />
     } else {
         return (
             <>
